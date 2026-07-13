@@ -1524,6 +1524,66 @@
       }
     }
 
+    /* ===== 한국어 / 영어 전환 ===== */
+    .language-switcher {
+      position: fixed;
+      top: 22px;
+      right: max(18px, env(safe-area-inset-right));
+      z-index: 190;
+      display: inline-flex;
+      gap: 4px;
+      padding: 5px;
+      border: 3px solid var(--cocoa-700);
+      border-radius: 14px;
+      background: rgba(255, 253, 249, 0.94);
+      box-shadow: 5px 6px 0 rgba(77, 57, 45, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .language-button {
+      min-width: 72px;
+      min-height: 38px;
+      padding: 6px 11px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--cocoa-700);
+      background: transparent;
+      font-weight: 900;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .language-button[aria-pressed="true"] {
+      background: var(--apricot-300);
+      box-shadow: inset 0 -3px 0 rgba(118, 87, 68, 0.16);
+    }
+
+    .language-button:focus-visible {
+      outline: 3px solid var(--sage-500);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 640px) {
+      .language-switcher {
+        top: 14px;
+        right: max(10px, env(safe-area-inset-right));
+        padding: 4px;
+        border-width: 2px;
+        box-shadow: 3px 4px 0 rgba(77, 57, 45, 0.18);
+      }
+
+      .language-button {
+        min-width: 43px;
+        min-height: 34px;
+        padding: 5px 8px;
+        font-size: 0.78rem;
+      }
+
+      .language-button__full {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 
@@ -1532,6 +1592,15 @@
   <div class="scroll-progress" aria-hidden="true">
     <div class="scroll-progress__fill" id="scrollProgressFill"></div>
   </div>
+  <div class="language-switcher" role="group" aria-label="언어 선택">
+    <button class="language-button" id="languageKo" type="button" data-language="ko" aria-pressed="true">
+      KO<span class="language-button__full"> · 한국어</span>
+    </button>
+    <button class="language-button" id="languageEn" type="button" data-language="en" aria-pressed="false">
+      EN<span class="language-button__full"> · English</span>
+    </button>
+  </div>
+
   <div class="site-shell">
     <span class="pixel-dot one"></span>
     <span class="pixel-dot two"></span>
@@ -1799,99 +1868,339 @@
     const followButton = document.getElementById("followButton");
     const retryButton = document.getElementById("retryButton");
 
+    const languageButtons = document.querySelectorAll(".language-button");
+
+    const staticTranslations = {
+      "포근한 성향 테스트": "Cozy Personality Test",
+      "운명의 냥줍:": "Destiny Cat Match:",
+      "나와 꼭 닮은": "What if a",
+      "털뭉치": "furry friend",
+      "가": "",
+      "당신에게 다가온다면?": "just like you came your way?",
+      "다섯 번의 선택으로 나와 닮은 고양이를 찾고, 결과 속 고양이와 직접 상호작용해 보세요.": "Make five choices, discover the cat that matches you, and interact with your result.",
+      "🐾 5문항": "🐾 5 questions",
+      "⏱ 약 1분": "⏱ About 1 min",
+      "🐈 5가지 결과": "🐈 5 results",
+      "고양이에게 간택당하기": "Find my destiny cat",
+      "어떤 테스트인지 보기": "See how it works",
+      "“혹시… 나 데려갈 집사 맞아?”": "“Are you… the human who will take me home?”",
+      "어떤 경험인가요?": "How does it work?",
+      "다섯 번의 선택 끝에 만나는 나의 운명 고양이": "Meet your destiny cat after five simple choices",
+      "질문에 답하면 성향에 어울리는 고양이가 공개됩니다. 결과에서는 고양이의 성격과 특징을 확인하고, 데스크톱에서는 고양이가 마우스를 졸졸 따라오는 인터랙션도 즐길 수 있어요.": "Answer five questions to reveal the cat that suits your personality. Learn its traits and, on desktop, let it follow your pointer around the screen.",
+      "5지 선다형 질문으로 성향 분석": "Personality analysis with five-choice questions",
+      "발바닥 젤리 로딩 후 운명의 고양이 공개": "A paw-print loading moment before your result",
+      "품종·성격·특징까지 함께 알아보기": "Discover the breed, personality, and defining traits",
+      "운명의 냥줍만의 매력": "Why Destiny Cat Match is special",
+      "한 페이지 안에 담은 네 가지 핵심 경험": "Four core experiences in one page",
+      "텍스트와 이미지로 주제를 분명하게 전달하고, 버튼·팝업·결과 전환·커서 추적까지 바닐라 JavaScript 기반 상호작용으로 구현했습니다.": "Clear text and visuals introduce the concept, while vanilla JavaScript powers buttons, popups, result transitions, and pointer-following interaction.",
+      "나와 닮은 고양이 찾기": "Find a cat like me",
+      "다섯 개의 선택을 바탕으로 성향을 분석하고, 당신과 가장 잘 어울리는 고양이를 매칭합니다.": "Your five choices are analyzed to match you with the cat that fits you best.",
+      "심쿵 유발 도트 캐릭터": "Charming pixel characters",
+      "부드러운 파스텔 컬러와 픽셀 아트를 조합해 레트로 게임 같은 귀여운 화면을 완성했습니다.": "Soft pastel colors and pixel art create a cozy screen inspired by retro games.",
+      "졸졸 따라오는 인터랙션": "A cat that follows you",
+      "결과를 확인한 고양이가 마우스 커서를 따라다니며 테스트 이후에도 작은 즐거움을 이어갑니다.": "After the result, your cat follows the pointer and keeps the playful experience going.",
+      "재미있게 읽는 고양이 정보": "Light and useful cat facts",
+      "품종별 성격과 특징을 쉽고 가볍게 소개해 귀여움과 정보성을 함께 전달합니다.": "Breed personalities and characteristics are presented in an easy, playful way.",
+      "이제 당신 차례예요": "Now it is your turn",
+      "오늘, 어떤 고양이에게 간택당하게 될까요?": "Which cat will choose you today?",
+      "팝업에서 다섯 개 질문에 답하면 나와 닮은 고양이와 성격 설명이 공개됩니다. 결과가 마음에 들면 고양이를 화면 속 친구로 데려가 보세요.": "Answer five questions in the popup to reveal your matching cat and personality description. Then bring the cat onto the screen as your little companion.",
+      "운명의 고양이 만나기": "Meet my destiny cat",
+      "🐾 운명의 냥줍": "🐾 Destiny Cat Match",
+      "당신과 꼭 닮은 털뭉치를 찾아드려요.": "Find the furry friend that is just like you.",
+      "이제부터 내가 널 따라다닐게옹!": "I will follow you from now on!",
+      "🐾 운명의 냥줍 테스트": "🐾 Destiny Cat Match Test",
+      "질문 1 / 5": "Question 1 / 5",
+      "운명의 냥이 탐색 중": "Searching for your destiny cat",
+      "발바닥 젤리로 결과를 꾹꾹 누르는 중…": "Pressing paw pads to prepare your result…",
+      "당신과 가장 닮은 털뭉치를 찾고 있어요.": "Finding the furry friend most like you.",
+      "당신을 간택한 운명의 고양이는": "The destiny cat that chose you is",
+      "이제부터 날 따라다녀!": "Follow me from now on!",
+      "다시 냥줍하기": "Try again"
+    };
+
+    const originalTextNodes = [];
+    const bodyTextWalker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.parentElement || node.parentElement.closest("script, style")) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return /[가-힣]/.test(node.nodeValue)
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_REJECT;
+        }
+      }
+    );
+
+    while (bodyTextWalker.nextNode()) {
+      const node = bodyTextWalker.currentNode;
+      originalTextNodes.push({
+        node,
+        ko: node.nodeValue,
+        normalized: node.nodeValue.trim().replace(/\s+/g, " ")
+      });
+    }
+
+    let currentLanguage =
+      localStorage.getItem("destinyCatLanguage") === "en" ? "en" : "ko";
+
+    function applyLanguage(language) {
+      currentLanguage = language;
+      localStorage.setItem("destinyCatLanguage", language);
+      document.documentElement.lang = language;
+      document.title =
+        language === "ko"
+          ? "운명의 냥줍 | 나와 꼭 닮은 털뭉치 찾기"
+          : "Destiny Cat Match | Find Your Furry Twin";
+
+      const description = document.querySelector('meta[name="description"]');
+      if (description) {
+        description.content =
+          language === "ko"
+            ? "5개의 성향 질문으로 나와 꼭 닮은 운명의 고양이를 찾아보세요."
+            : "Answer five personality questions and find the destiny cat that is just like you.";
+      }
+
+      originalTextNodes.forEach(({ node, ko, normalized }) => {
+        if (language === "ko") {
+          node.nodeValue = ko;
+          return;
+        }
+
+        const translated = staticTranslations[normalized];
+        if (translated !== undefined) {
+          const leading = ko.match(/^\s*/)?.[0] ?? "";
+          const trailing = ko.match(/\s*$/)?.[0] ?? "";
+          node.nodeValue = `${leading}${translated}${trailing}`;
+        }
+      });
+
+      languageButtons.forEach((button) => {
+        const isActive = button.dataset.language === language;
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      const switcher = document.querySelector(".language-switcher");
+      if (switcher) {
+        switcher.setAttribute(
+          "aria-label",
+          language === "ko" ? "언어 선택" : "Select language"
+        );
+      }
+
+      closeTestButton.setAttribute(
+        "aria-label",
+        language === "ko" ? "테스트 닫기" : "Close test"
+      );
+
+      if (testOverlay.classList.contains("open")) {
+        if (!questionScreen.hidden) {
+          renderQuestion();
+        } else if (!resultScreen.hidden) {
+          renderResult(currentResultKey);
+        }
+      }
+    }
+
+    languageButtons.forEach((button) => {
+      button.addEventListener("click", () => applyLanguage(button.dataset.language));
+    });
+
     const questions = [
       {
-        title: "모처럼 아무 일정도 없는 주말! 가장 끌리는 하루는?",
-        answers: [
-          { text: "이불 속에서 좋아하는 콘텐츠를 정주행한다.", cat: "ragdoll" },
-          { text: "조용한 카페에서 혼자만의 시간을 보낸다.", cat: "russianBlue" },
-          { text: "친구들을 불러 수다와 맛있는 음식을 즐긴다.", cat: "siamese" },
-          { text: "처음 가보는 동네를 즉흥적으로 탐험한다.", cat: "bengal" },
-          { text: "소중한 사람 곁에 붙어 느긋하게 쉰다.", cat: "scottishFold" }
-        ]
+        ko: {
+          title: "모처럼 아무 일정도 없는 주말! 가장 끌리는 하루는?",
+          answers: [
+            "이불 속에서 좋아하는 콘텐츠를 정주행한다.",
+            "조용한 카페에서 혼자만의 시간을 보낸다.",
+            "친구들을 불러 수다와 맛있는 음식을 즐긴다.",
+            "처음 가보는 동네를 즉흥적으로 탐험한다.",
+            "소중한 사람 곁에 붙어 느긋하게 쉰다."
+          ]
+        },
+        en: {
+          title: "A rare weekend with no plans—what sounds best?",
+          answers: [
+            "Binge my favorite shows from under the blankets.",
+            "Enjoy some quiet time alone at a calm café.",
+            "Invite friends over for food and conversation.",
+            "Spontaneously explore a neighborhood I have never visited.",
+            "Relax beside someone special."
+          ]
+        },
+        cats: ["ragdoll", "russianBlue", "siamese", "bengal", "scottishFold"]
       },
       {
-        title: "낯선 모임에 도착한 당신은 어떻게 행동하나요?",
-        answers: [
-          { text: "편안한 자리를 찾아 분위기부터 살핀다.", cat: "ragdoll" },
-          { text: "먼저 관찰하며 천천히 적응한다.", cat: "russianBlue" },
-          { text: "먼저 인사하고 자연스럽게 대화를 시작한다.", cat: "siamese" },
-          { text: "재미있어 보이는 사람에게 바로 다가간다.", cat: "bengal" },
-          { text: "아는 사람 한 명 곁에 꼭 붙어 있는다.", cat: "scottishFold" }
-        ]
+        ko: {
+          title: "낯선 모임에 도착한 당신은 어떻게 행동하나요?",
+          answers: [
+            "편안한 자리를 찾아 분위기부터 살핀다.",
+            "먼저 관찰하며 천천히 적응한다.",
+            "먼저 인사하고 자연스럽게 대화를 시작한다.",
+            "재미있어 보이는 사람에게 바로 다가간다.",
+            "아는 사람 한 명 곁에 꼭 붙어 있는다."
+          ]
+        },
+        en: {
+          title: "How do you act when you arrive at an unfamiliar gathering?",
+          answers: [
+            "Find a comfortable spot and read the room.",
+            "Observe first and settle in slowly.",
+            "Say hello first and naturally start a conversation.",
+            "Walk straight over to someone who looks interesting.",
+            "Stay close to the one person I already know."
+          ]
+        },
+        cats: ["ragdoll", "russianBlue", "siamese", "bengal", "scottishFold"]
       },
       {
-        title: "친구가 고민을 털어놓았을 때 나의 반응은?",
-        answers: [
-          { text: "따뜻하게 들어주며 편안하게 안심시킨다.", cat: "ragdoll" },
-          { text: "상황을 차분히 정리하고 현실적인 조언을 한다.", cat: "russianBlue" },
-          { text: "적극적으로 공감하며 대화를 오래 이어간다.", cat: "siamese" },
-          { text: "당장 기분 전환할 재미있는 계획을 제안한다.", cat: "bengal" },
-          { text: "말없이 곁을 지키며 필요한 것을 챙겨준다.", cat: "scottishFold" }
-        ]
+        ko: {
+          title: "친구가 고민을 털어놓았을 때 나의 반응은?",
+          answers: [
+            "따뜻하게 들어주며 편안하게 안심시킨다.",
+            "상황을 차분히 정리하고 현실적인 조언을 한다.",
+            "적극적으로 공감하며 대화를 오래 이어간다.",
+            "당장 기분 전환할 재미있는 계획을 제안한다.",
+            "말없이 곁을 지키며 필요한 것을 챙겨준다."
+          ]
+        },
+        en: {
+          title: "How do you respond when a friend shares a concern?",
+          answers: [
+            "Listen warmly and help them feel reassured.",
+            "Organize the situation calmly and offer practical advice.",
+            "Empathize actively and keep the conversation going.",
+            "Suggest a fun plan to lift their mood right away.",
+            "Stay beside them quietly and take care of what they need."
+          ]
+        },
+        cats: ["ragdoll", "russianBlue", "siamese", "bengal", "scottishFold"]
       },
       {
-        title: "새로운 일을 시작할 때 가장 가까운 모습은?",
-        answers: [
-          { text: "익숙해질 때까지 내 속도대로 천천히 해본다.", cat: "ragdoll" },
-          { text: "정보와 계획을 충분히 정리한 뒤 움직인다.", cat: "russianBlue" },
-          { text: "사람들과 아이디어를 나누며 시작한다.", cat: "siamese" },
-          { text: "일단 부딪혀 보고 빠르게 배우는 편이다.", cat: "bengal" },
-          { text: "믿을 만한 사람과 함께하면 용기가 난다.", cat: "scottishFold" }
-        ]
+        ko: {
+          title: "새로운 일을 시작할 때 가장 가까운 모습은?",
+          answers: [
+            "익숙해질 때까지 내 속도대로 천천히 해본다.",
+            "정보와 계획을 충분히 정리한 뒤 움직인다.",
+            "사람들과 아이디어를 나누며 시작한다.",
+            "일단 부딪혀 보고 빠르게 배우는 편이다.",
+            "믿을 만한 사람과 함께하면 용기가 난다."
+          ]
+        },
+        en: {
+          title: "Which best describes you when starting something new?",
+          answers: [
+            "Take it slowly at my own pace until it feels familiar.",
+            "Gather enough information and make a plan first.",
+            "Start by sharing ideas with other people.",
+            "Jump in first and learn quickly along the way.",
+            "Feel braver when I begin with someone I trust."
+          ]
+        },
+        cats: ["ragdoll", "russianBlue", "siamese", "bengal", "scottishFold"]
       },
       {
-        title: "사람들이 나를 표현할 때 자주 하는 말은?",
-        answers: [
-          { text: "같이 있으면 마음이 편안해.", cat: "ragdoll" },
-          { text: "차분하고 믿음직스러워.", cat: "russianBlue" },
-          { text: "말도 재미있고 에너지가 넘쳐.", cat: "siamese" },
-          { text: "호기심 많고 행동력이 좋아.", cat: "bengal" },
-          { text: "다정하고 은근히 애교가 많아.", cat: "scottishFold" }
-        ]
+        ko: {
+          title: "사람들이 나를 표현할 때 자주 하는 말은?",
+          answers: [
+            "같이 있으면 마음이 편안해.",
+            "차분하고 믿음직스러워.",
+            "말도 재미있고 에너지가 넘쳐.",
+            "호기심 많고 행동력이 좋아.",
+            "다정하고 은근히 애교가 많아."
+          ]
+        },
+        en: {
+          title: "What do people often say about you?",
+          answers: [
+            "I feel comfortable when I am with you.",
+            "You are calm and dependable.",
+            "You are funny and full of energy.",
+            "You are curious and quick to take action.",
+            "You are caring and quietly affectionate."
+          ]
+        },
+        cats: ["ragdoll", "russianBlue", "siamese", "bengal", "scottishFold"]
       }
     ];
 
     const catResults = {
       ragdoll: {
-        name: "포근한 랙돌",
         emoji: "🐈",
-        tagline: "“네 옆이 제일 편안해. 오늘은 같이 늘어져 있자.”",
-        description:
-          "당신은 부드럽고 안정적인 분위기로 주변 사람을 편안하게 만드는 타입이에요. 서두르기보다 자신의 리듬을 지키며, 믿는 사람에게는 깊은 애정과 다정함을 보여줍니다.",
-        traits: ["포근함", "느긋함", "다정함", "안정 추구"]
+        ko: {
+          name: "포근한 랙돌",
+          tagline: "“네 옆이 제일 편안해. 오늘은 같이 늘어져 있자.”",
+          description: "당신은 부드럽고 안정적인 분위기로 주변 사람을 편안하게 만드는 타입이에요. 서두르기보다 자신의 리듬을 지키며, 믿는 사람에게는 깊은 애정과 다정함을 보여줍니다.",
+          traits: ["포근함", "느긋함", "다정함", "안정 추구"]
+        },
+        en: {
+          name: "Cozy Ragdoll",
+          tagline: "“I feel safest beside you. Let’s relax together today.”",
+          description: "You create a gentle, steady atmosphere that puts others at ease. You prefer your own rhythm over rushing and show deep affection to the people you trust.",
+          traits: ["Cozy", "Easygoing", "Caring", "Stability"]
+        }
       },
       russianBlue: {
-        name: "차분한 러시안 블루",
         emoji: "🐈‍⬛",
-        tagline: "“조용히 지켜봤는데… 아무래도 네가 마음에 들어.”",
-        description:
-          "당신은 섬세한 관찰력과 신중함을 가진 타입이에요. 처음에는 조용해 보이지만 마음을 연 상대에게는 진솔하고 깊은 관계를 만들어 갑니다.",
-        traits: ["신중함", "관찰력", "독립심", "깊은 신뢰"]
+        ko: {
+          name: "차분한 러시안 블루",
+          tagline: "“조용히 지켜봤는데… 아무래도 네가 마음에 들어.”",
+          description: "당신은 섬세한 관찰력과 신중함을 가진 타입이에요. 처음에는 조용해 보이지만 마음을 연 상대에게는 진솔하고 깊은 관계를 만들어 갑니다.",
+          traits: ["신중함", "관찰력", "독립심", "깊은 신뢰"]
+        },
+        en: {
+          name: "Calm Russian Blue",
+          tagline: "“I have been watching quietly… and I think I like you.”",
+          description: "You are thoughtful and highly observant. You may seem quiet at first, but once you open your heart, you build sincere and meaningful relationships.",
+          traits: ["Thoughtful", "Observant", "Independent", "Trusting"]
+        }
       },
       siamese: {
-        name: "수다쟁이 샴",
         emoji: "😺",
-        tagline: "“나랑 밤새 이야기해 줄 집사를 드디어 찾았다옹!”",
-        description:
-          "당신은 사람과 이야기하고 감정을 나누는 데서 에너지를 얻는 타입이에요. 풍부한 표현력과 친화력으로 어디서든 분위기를 활기차게 만듭니다.",
-        traits: ["사교성", "표현력", "호기심", "풍부한 감정"]
+        ko: {
+          name: "수다쟁이 샴",
+          tagline: "“나랑 밤새 이야기해 줄 집사를 드디어 찾았다옹!”",
+          description: "당신은 사람과 이야기하고 감정을 나누는 데서 에너지를 얻는 타입이에요. 풍부한 표현력과 친화력으로 어디서든 분위기를 활기차게 만듭니다.",
+          traits: ["사교성", "표현력", "호기심", "풍부한 감정"]
+        },
+        en: {
+          name: "Chatty Siamese",
+          tagline: "“I finally found a human who will talk with me all night!”",
+          description: "You gain energy from conversation and emotional connection. Your expressiveness and sociability bring life to every room you enter.",
+          traits: ["Social", "Expressive", "Curious", "Emotional"]
+        }
       },
       bengal: {
-        name: "모험가 벵갈",
         emoji: "🐆",
-        tagline: "“가만히 있기는 아쉽잖아? 나랑 새로운 곳으로 가자!”",
-        description:
-          "당신은 새로운 자극과 경험을 즐기는 행동파예요. 궁금한 것은 직접 확인해야 직성이 풀리고, 빠른 적응력과 추진력으로 주변에 신선한 에너지를 전합니다.",
-        traits: ["모험심", "행동력", "적응력", "넘치는 에너지"]
+        ko: {
+          name: "모험가 벵갈",
+          tagline: "“가만히 있기는 아쉽잖아? 나랑 새로운 곳으로 가자!”",
+          description: "당신은 새로운 자극과 경험을 즐기는 행동파예요. 궁금한 것은 직접 확인해야 직성이 풀리고, 빠른 적응력과 추진력으로 주변에 신선한 에너지를 전합니다.",
+          traits: ["모험심", "행동력", "적응력", "넘치는 에너지"]
+        },
+        en: {
+          name: "Adventurous Bengal",
+          tagline: "“Standing still is boring. Let’s explore somewhere new!”",
+          description: "You are an energetic doer who loves fresh experiences. You need to discover things firsthand, and your adaptability and drive energize everyone around you.",
+          traits: ["Adventurous", "Driven", "Adaptable", "Energetic"]
+        }
       },
       scottishFold: {
-        name: "애교쟁이 스코티시 폴드",
         emoji: "😽",
-        tagline: "“말은 안 해도 알아. 네 곁에 꼭 붙어 있을게.”",
-        description:
-          "당신은 가까운 사람을 세심하게 챙기는 애정 깊은 타입이에요. 화려하게 표현하지 않아도 따뜻한 행동으로 마음을 전하며, 편안하고 오래가는 관계를 소중히 여깁니다.",
-        traits: ["애정 표현", "세심함", "친밀감", "충성심"]
+        ko: {
+          name: "애교쟁이 스코티시 폴드",
+          tagline: "“말은 안 해도 알아. 네 곁에 꼭 붙어 있을게.”",
+          description: "당신은 가까운 사람을 세심하게 챙기는 애정 깊은 타입이에요. 화려하게 표현하지 않아도 따뜻한 행동으로 마음을 전하며, 편안하고 오래가는 관계를 소중히 여깁니다.",
+          traits: ["애정 표현", "세심함", "친밀감", "충성심"]
+        },
+        en: {
+          name: "Affectionate Scottish Fold",
+          tagline: "“I understand without words. I’ll stay right beside you.”",
+          description: "You care deeply for the people close to you. Rather than making grand displays, you express love through warm actions and value comfortable, lasting relationships.",
+          traits: ["Affectionate", "Attentive", "Close-knit", "Loyal"]
+        }
       }
     };
 
@@ -1949,20 +2258,24 @@
 
     function renderQuestion() {
       const question = questions[currentQuestion];
+      const localizedQuestion = question[currentLanguage];
       const displayedQuestion = currentQuestion + 1;
 
-      questionCount.textContent = `질문 ${displayedQuestion} / ${questions.length}`;
+      questionCount.textContent =
+        currentLanguage === "ko"
+          ? `질문 ${displayedQuestion} / ${questions.length}`
+          : `Question ${displayedQuestion} / ${questions.length}`;
       questionBadge.textContent = `Q${displayedQuestion}`;
-      questionTitle.textContent = question.title;
+      questionTitle.textContent = localizedQuestion.title;
       progressFill.style.width = `${(displayedQuestion / questions.length) * 100}%`;
       answerList.innerHTML = "";
 
-      question.answers.forEach((answer) => {
+      localizedQuestion.answers.forEach((answerText, index) => {
         const button = document.createElement("button");
         button.className = "answer-button";
         button.type = "button";
-        button.textContent = answer.text;
-        button.addEventListener("click", () => selectAnswer(answer.cat));
+        button.textContent = answerText;
+        button.addEventListener("click", () => selectAnswer(question.cats[index]));
         answerList.appendChild(button);
       });
     }
@@ -1999,12 +2312,13 @@
 
     function renderResult(key) {
       const result = catResults[key];
+      const localizedResult = result[currentLanguage];
 
-      resultTitle.textContent = result.name;
+      resultTitle.textContent = localizedResult.name;
       resultEmoji.textContent = result.emoji;
-      resultTagline.textContent = result.tagline;
-      resultDescription.textContent = result.description;
-      resultTraits.innerHTML = result.traits
+      resultTagline.textContent = localizedResult.tagline;
+      resultDescription.textContent = localizedResult.description;
+      resultTraits.innerHTML = localizedResult.traits
         .map((trait) => `<span class="result-trait"># ${trait}</span>`)
         .join("");
 
@@ -2014,14 +2328,24 @@
 
     function activateFollower() {
       const result = catResults[currentResultKey];
+      const localizedResult = result[currentLanguage];
 
       isFollowing = true;
       followCatImage.textContent = result.emoji;
-      followCat.setAttribute("aria-label", `${result.name}가 마우스를 따라다니는 중`);
+      followCat.setAttribute(
+        "aria-label",
+        currentLanguage === "ko"
+          ? `${localizedResult.name}가 마우스를 따라다니는 중`
+          : `${localizedResult.name} is following the pointer`
+      );
       followCat.classList.add("active");
       closeTest();
 
-      showToast(`${result.name}가 이제부터 널 따라다닐게옹!`);
+      showToast(
+        currentLanguage === "ko"
+          ? `${localizedResult.name}가 이제부터 널 따라다닐게옹!`
+          : `${localizedResult.name} will follow you from now on!`
+      );
     }
 
     startButton.addEventListener("click", openTest);
@@ -2095,6 +2419,7 @@
     window.addEventListener("resize", updateScrollProgress);
     window.addEventListener("orientationchange", updateScrollProgress);
     updateScrollProgress();
+    applyLanguage(currentLanguage);
 
     animateFollower();
   </script>
