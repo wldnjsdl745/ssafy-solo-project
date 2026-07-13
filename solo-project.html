@@ -149,14 +149,20 @@
 
     .hero {
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
       align-items: center;
       gap: 64px;
       min-height: 760px;
       padding: 90px 0 72px;
     }
 
+    .hero-copy,
+    .hero-art {
+      min-width: 0;
+    }
+
     .hero-copy h1 {
+      width: 100%;
       max-width: 720px;
       margin: 0 0 24px;
       font-size: clamp(2.8rem, 7vw, 5.7rem);
@@ -165,19 +171,78 @@
       word-break: keep-all;
     }
 
-    .hero-copy h1 span {
+    .hero-title-main {
+      display: block;
+      font-size: 1em;
+      line-height: 1.02;
+    }
+
+    .hero-title-sub {
+      display: block;
+      margin-top: 0.22em;
+      font-size: 0.72em;
+      line-height: 1.2;
+      letter-spacing: -0.045em;
+    }
+
+
+    /* ===== 메인 제목 타이핑 효과 ===== */
+    .hero-title-main,
+    .hero-title-sub {
+      min-height: 1em;
+    }
+
+    .hero-title-typing::after {
+      content: "";
+      display: inline-block;
+      width: 0.09em;
+      height: 0.88em;
+      margin-left: 0.08em;
+      vertical-align: -0.04em;
+      background: currentColor;
+      animation: titleCaretBlink 0.72s steps(1, end) infinite;
+    }
+
+    @keyframes titleCaretBlink {
+      50% { opacity: 0; }
+    }
+
+    .hero-title-sub.hero-title-typing::after {
+      display: none;
+    }
+
+    .hero-title-line {
+      display: block;
+    }
+
+    .hero-title-line--last {
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .hero-title-caret {
+      display: inline-block;
+      width: 0.09em;
+      height: 0.88em;
+      margin-left: 0.08em;
+      vertical-align: -0.04em;
+      background: currentColor;
+      animation: titleCaretBlink 0.72s steps(1, end) infinite;
+    }
+
+    .hero-highlight {
       position: relative;
       display: inline-block;
       color: var(--apricot-500);
     }
 
-    .hero-copy h1 span::after {
+    .hero-highlight::after {
       content: "";
       position: absolute;
       left: 2%;
       bottom: 3px;
       width: 96%;
-      height: 11px;
+      height: 9px;
       z-index: -1;
       border-radius: 999px;
       background: var(--apricot-100);
@@ -243,14 +308,18 @@
 
     .hero-art {
       position: relative;
+      width: 100%;
       min-height: 520px;
       display: grid;
       place-items: center;
+      contain: layout;
     }
 
     .game-window {
       position: relative;
-      width: min(460px, 100%);
+      width: 100%;
+      max-width: 460px;
+      min-width: 0;
       min-height: 460px;
       overflow: hidden;
       border: 4px solid var(--cocoa-700);
@@ -1246,6 +1315,12 @@
         letter-spacing: -0.05em;
       }
 
+      .hero-title-sub {
+        margin-top: 0.28em;
+        font-size: 0.76em;
+        line-height: 1.24;
+      }
+
       .hero-copy p {
         margin-bottom: 26px;
         font-size: 1rem;
@@ -1610,9 +1685,11 @@
         <div class="hero-copy">
           <span class="eyebrow">포근한 성향 테스트</span>
           <h1 id="hero-title">
-            운명의 냥줍:<br />
-            나와 꼭 닮은 <span>털뭉치</span>가<br />
-            당신에게 다가온다면?
+            <span class="hero-title-main">운명의 냥줍:</span>
+            <span class="hero-title-sub">
+              나와 꼭 닮은 <span class="hero-highlight">털뭉치</span>가<br />
+              당신에게 다가온다면?
+            </span>
           </h1>
           <p>
             다섯 번의 선택으로 나와 닮은 고양이를 찾고,
@@ -1943,6 +2020,133 @@
       });
     }
 
+
+
+    let heroTypingTimer = null;
+    let heroTypingRun = 0;
+
+    function waitForTyping(ms, runId) {
+      return new Promise((resolve) => {
+        heroTypingTimer = window.setTimeout(() => {
+          if (runId === heroTypingRun) resolve();
+        }, ms);
+      });
+    }
+
+    async function typeHeroTitle(language) {
+      const main = document.querySelector(".hero-title-main");
+      const sub = document.querySelector(".hero-title-sub");
+      if (!main || !sub) return;
+
+      heroTypingRun += 1;
+      const runId = heroTypingRun;
+      if (heroTypingTimer) window.clearTimeout(heroTypingTimer);
+
+      const content = language === "ko"
+        ? {
+            main: "운명의 냥줍:",
+            before: "나와 꼭 닮은 ",
+            highlight: "털뭉치",
+            after: "가\n당신에게 다가온다면?"
+          }
+        : {
+            main: "Destiny Cat Match:",
+            before: "What if a ",
+            highlight: "furry friend",
+            after: "\njust like you came your way?"
+          };
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const renderSub = (beforeText, highlightText, afterText, showCaret = false) => {
+        sub.replaceChildren();
+
+        const normalizedAfterText = afterText.replace(/\n+$/, "");
+        const afterParts = normalizedAfterText.split("\n");
+        const firstLine = document.createElement("span");
+        firstLine.className = "hero-title-line";
+        firstLine.append(document.createTextNode(beforeText));
+
+        if (highlightText) {
+          const highlight = document.createElement("span");
+          highlight.className = "hero-highlight";
+          highlight.textContent = highlightText;
+          firstLine.append(highlight);
+        }
+
+        firstLine.append(document.createTextNode(afterParts[0] || ""));
+        sub.append(firstLine);
+
+        if (afterParts.length > 1) {
+          const lastLine = document.createElement("span");
+          lastLine.className = "hero-title-line hero-title-line--last";
+          lastLine.append(document.createTextNode(afterParts.slice(1).join(" ")));
+          if (showCaret) {
+            const caret = document.createElement("span");
+            caret.className = "hero-title-caret";
+            caret.setAttribute("aria-hidden", "true");
+            lastLine.append(caret);
+          }
+          sub.append(lastLine);
+        } else if (showCaret) {
+          firstLine.classList.add("hero-title-line--last");
+          const caret = document.createElement("span");
+          caret.className = "hero-title-caret";
+          caret.setAttribute("aria-hidden", "true");
+          firstLine.append(caret);
+        }
+      };
+
+      if (reduceMotion) {
+        main.textContent = content.main;
+        renderSub(content.before, content.highlight, content.after);
+        main.classList.remove("hero-title-typing");
+        sub.classList.remove("hero-title-typing");
+        return;
+      }
+
+      main.textContent = "";
+      sub.replaceChildren();
+      main.classList.add("hero-title-typing");
+      sub.classList.remove("hero-title-typing");
+
+      for (const character of content.main) {
+        if (runId !== heroTypingRun) return;
+        main.textContent += character;
+        await waitForTyping(72, runId);
+      }
+
+      main.classList.remove("hero-title-typing");
+      sub.classList.add("hero-title-typing");
+      await waitForTyping(180, runId);
+
+      let beforeTyped = "";
+      for (const character of content.before) {
+        if (runId !== heroTypingRun) return;
+        beforeTyped += character;
+        renderSub(beforeTyped, "", "", true);
+        await waitForTyping(48, runId);
+      }
+
+      let highlightTyped = "";
+      for (const character of content.highlight) {
+        if (runId !== heroTypingRun) return;
+        highlightTyped += character;
+        renderSub(content.before, highlightTyped, "", true);
+        await waitForTyping(58, runId);
+      }
+
+      let afterTyped = "";
+      for (const character of content.after) {
+        if (runId !== heroTypingRun) return;
+        afterTyped += character;
+        renderSub(content.before, content.highlight, afterTyped.replace(/\n+$/, ""), true);
+        await waitForTyping(character === "\n" ? 130 : 48, runId);
+      }
+
+      renderSub(content.before, content.highlight, content.after, false);
+      sub.classList.remove("hero-title-typing");
+    }
+
     let currentLanguage =
       localStorage.getItem("destinyCatLanguage") === "en" ? "en" : "ko";
 
@@ -2002,6 +2206,8 @@
           renderResult(currentResultKey);
         }
       }
+
+      typeHeroTitle(language);
     }
 
     languageButtons.forEach((button) => {
