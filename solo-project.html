@@ -1659,6 +1659,297 @@
       }
     }
 
+  
+
+    /* ===== 고양이 선택형 댓글 ===== */
+    .cat-comments {
+      padding-top: 20px;
+      padding-bottom: 110px;
+    }
+
+    .comments-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 26px;
+      padding: 32px;
+      border: var(--pixel-border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 253, 249, 0.9);
+      box-shadow: var(--shadow);
+    }
+
+    .comment-form-card,
+    .comment-list-card {
+      min-width: 0;
+      padding: 26px;
+      border: 3px solid var(--cocoa-700);
+      border-radius: 24px;
+      background: var(--cream-50);
+      box-shadow: 7px 8px 0 rgba(118, 87, 68, 0.13);
+    }
+
+    .comment-form-card h3,
+    .comment-list-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      line-height: 1.35;
+    }
+
+    .comment-helper {
+      margin: 0 0 20px;
+      color: var(--cocoa-500);
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .cat-choice-label,
+    .comment-input-label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+
+    .cat-choice-list {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(58px, 1fr));
+      gap: 9px;
+      margin: 0 0 22px;
+      padding: 0;
+      border: 0;
+    }
+
+    .cat-choice {
+      position: relative;
+      min-width: 0;
+    }
+
+    .cat-choice input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cat-choice-ui {
+      display: grid;
+      place-items: center;
+      min-height: 74px;
+      border: 3px solid var(--cream-200);
+      border-radius: 17px;
+      background: var(--white);
+      font-size: 2.2rem;
+      cursor: pointer;
+      box-shadow: 3px 4px 0 rgba(118, 87, 68, 0.12);
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .cat-choice input:checked + .cat-choice-ui {
+      border-color: var(--cocoa-700);
+      background: var(--apricot-100);
+      transform: translateY(-3px);
+    }
+
+    .cat-choice input:focus-visible + .cat-choice-ui {
+      outline: 3px solid var(--sage-500);
+      outline-offset: 3px;
+    }
+
+    .comment-textarea-wrap {
+      position: relative;
+    }
+
+    .comment-textarea {
+      display: block;
+      width: 100%;
+      min-height: 132px;
+      resize: vertical;
+      padding: 15px 16px 38px;
+      border: 3px solid var(--cocoa-700);
+      border-radius: 16px;
+      background: var(--white);
+      color: var(--cocoa-700);
+      font: inherit;
+      line-height: 1.65;
+      outline: none;
+    }
+
+    .comment-textarea:focus {
+      box-shadow: 0 0 0 4px rgba(184, 201, 170, 0.45);
+    }
+
+    .comment-count {
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      color: var(--cocoa-500);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .comment-submit {
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .comment-list-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .comment-total {
+      flex: 0 0 auto;
+      padding: 5px 10px;
+      border: 2px solid var(--cocoa-700);
+      border-radius: 999px;
+      background: var(--sage-100);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .comment-list {
+      display: grid;
+      gap: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 2px 6px 8px 2px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--apricot-300) var(--cream-200);
+    }
+
+    .comment-item {
+      display: grid;
+      grid-template-columns: 66px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding: 15px;
+      border: 2px solid var(--cream-200);
+      border-radius: 18px;
+      background: var(--white);
+    }
+
+    .comment-cat-image {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border: 2px solid var(--cocoa-700);
+      border-radius: 18px;
+      background: var(--apricot-100);
+      font-size: 2.3rem;
+      box-shadow: 3px 4px 0 rgba(118, 87, 68, 0.12);
+    }
+
+    .comment-body {
+      min-width: 0;
+    }
+
+    .comment-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px 12px;
+      margin-bottom: 5px;
+      color: var(--cocoa-500);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .comment-cat-name {
+      color: var(--apricot-500);
+      font-size: 0.86rem;
+      font-weight: 900;
+    }
+
+    .comment-message {
+      margin: 0;
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .comment-empty {
+      display: grid;
+      place-items: center;
+      min-height: 220px;
+      padding: 30px;
+      border: 2px dashed var(--cream-200);
+      border-radius: 18px;
+      color: var(--cocoa-500);
+      text-align: center;
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    .comment-empty span {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 2.7rem;
+    }
+
+    @media (max-width: 860px) {
+      .comments-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .cat-comments {
+        padding-bottom: 76px;
+      }
+
+      .comments-panel {
+        gap: 18px;
+        padding: 18px;
+        border-radius: 24px;
+      }
+
+      .comment-form-card,
+      .comment-list-card {
+        padding: 19px;
+        border-radius: 20px;
+      }
+
+      .cat-choice-list {
+        display: flex;
+        gap: 9px;
+        overflow-x: auto;
+        padding: 3px 3px 9px;
+        scroll-snap-type: x mandatory;
+      }
+
+      .cat-choice {
+        flex: 0 0 68px;
+        scroll-snap-align: start;
+      }
+
+      .cat-choice-ui {
+        min-height: 68px;
+        font-size: 2rem;
+      }
+
+      .comment-list {
+        max-height: none;
+      }
+
+      .comment-item {
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: 11px;
+        padding: 13px;
+      }
+
+      .comment-cat-image {
+        width: 52px;
+        height: 52px;
+        border-radius: 15px;
+        font-size: 2rem;
+      }
+    }
+
   </style>
 </head>
 
@@ -1839,6 +2130,73 @@
           </button>
         </div>
       </section>
+
+
+      <section class="section cat-comments" id="comments" aria-labelledby="comments-title">
+        <div class="container">
+          <div class="section-heading center">
+            <span class="eyebrow" id="commentsEyebrow">집사들의 한마디</span>
+            <h2 id="comments-title">자신만의 고양이를 자랑하세요</h2>
+            <p id="commentsDescription">선택한 고양이 이미지와 작성한 댓글이 함께 기록됩니다.</p>
+          </div>
+
+          <div class="comments-panel">
+            <form class="comment-form-card" id="catCommentForm">
+              <h3 id="commentFormTitle">어떤 고양이와 함께하시나요?</h3>
+              <p class="comment-helper" id="commentFormHelper">고양이를 선택한 뒤 당신의 고양이에 대한 댓글을 남겨주세요.</p>
+
+              <span class="cat-choice-label" id="catChoiceLabel">고양이 선택</span>
+              <fieldset class="cat-choice-list" id="catChoiceList" aria-label="고양이 선택">
+                <label class="cat-choice">
+                  <input type="radio" name="commentCat" value="ragdoll" checked />
+                  <span class="cat-choice-ui" role="img" aria-label="포근한 랙돌">🐈</span>
+                </label>
+                <label class="cat-choice">
+                  <input type="radio" name="commentCat" value="russianBlue" />
+                  <span class="cat-choice-ui" role="img" aria-label="차분한 러시안 블루">🐈‍⬛</span>
+                </label>
+                <label class="cat-choice">
+                  <input type="radio" name="commentCat" value="siamese" />
+                  <span class="cat-choice-ui" role="img" aria-label="수다쟁이 샴">😺</span>
+                </label>
+                <label class="cat-choice">
+                  <input type="radio" name="commentCat" value="bengal" />
+                  <span class="cat-choice-ui" role="img" aria-label="활동적인 벵갈">🐆</span>
+                </label>
+                <label class="cat-choice">
+                  <input type="radio" name="commentCat" value="scottishFold" />
+                  <span class="cat-choice-ui" role="img" aria-label="다정한 스코티시 폴드">😽</span>
+                </label>
+              </fieldset>
+
+              <label class="comment-input-label" for="catCommentInput" id="commentInputLabel">댓글</label>
+              <div class="comment-textarea-wrap">
+                <textarea
+                  class="comment-textarea"
+                  id="catCommentInput"
+                  maxlength="150"
+                  required
+                  placeholder="당신의 고양이를 위한 한 마디를 남겨주세요."
+                ></textarea>
+                <span class="comment-count" id="commentCount">0 / 150</span>
+              </div>
+
+              <button class="button primary comment-submit" id="commentSubmitButton" type="submit">
+                댓글 남기기
+              </button>
+            </form>
+
+            <div class="comment-list-card" aria-live="polite">
+              <div class="comment-list-head">
+                <h3 id="commentListTitle">고양이 댓글 모음</h3>
+                <span class="comment-total" id="commentTotal">0개</span>
+              </div>
+              <div class="comment-list" id="catCommentList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <footer class="footer">
@@ -2629,5 +2987,203 @@
 
     animateFollower();
   </script>
+
+
+  <script>
+    (() => {
+      const storageKey = "destinyCatComments";
+      const form = document.getElementById("catCommentForm");
+      const input = document.getElementById("catCommentInput");
+      const count = document.getElementById("commentCount");
+      const list = document.getElementById("catCommentList");
+      const total = document.getElementById("commentTotal");
+      const catChoiceList = document.getElementById("catChoiceList");
+
+      const catOptions = {
+        ragdoll: { emoji: "🐈", ko: "포근한 랙돌", en: "Cozy Ragdoll" },
+        russianBlue: { emoji: "🐈‍⬛", ko: "차분한 러시안 블루", en: "Calm Russian Blue" },
+        siamese: { emoji: "😺", ko: "수다쟁이 샴", en: "Chatty Siamese" },
+        bengal: { emoji: "🐆", ko: "활동적인 벵갈", en: "Energetic Bengal" },
+        scottishFold: { emoji: "😽", ko: "다정한 스코티시 폴드", en: "Sweet Scottish Fold" }
+      };
+
+      const commentTranslations = {
+        ko: {
+          eyebrow: "집사들의 한마디",
+          title: "자신만의 고양이를 자랑하세요",
+          description: "선택한 고양이 이미지와 작성한 댓글이 함께 기록됩니다.",
+          formTitle: "어떤 고양이와 함께하시나요?",
+          helper: "고양이를 선택한 뒤 당신의 고양이에 대한 댓글을 남겨주세요.",
+          choice: "고양이 선택",
+          input: "댓글",
+          placeholder: "고양이를 선택한 뒤 당신의 고양이에 대한 댓글을 남겨주세요.",
+          submit: "댓글 남기기",
+          listTitle: "고양이 댓글 모음",
+          empty: "아직 등록된 댓글이 없어요.\n첫 번째 집사가 되어주세요!",
+          countSuffix: "개",
+          guest: "익명 집사",
+          saved: "댓글이 등록되었습니다!"
+        },
+        en: {
+          eyebrow: "Notes from Cat Lovers",
+          title: "Choose a cat and leave a comment",
+          description: "Your selected cat image and comment will appear together.",
+          formTitle: "Which cat would you choose?",
+          helper: "Pick one cat and leave a short message.",
+          choice: "Choose a cat",
+          input: "Comment",
+          placeholder: "Tell us why you would like to be with this cat.",
+          submit: "Post comment",
+          listTitle: "Cat comments",
+          empty: "No comments yet.\nBe the first cat lover to leave one!",
+          countSuffix: " comments",
+          guest: "Anonymous cat lover",
+          saved: "Your comment has been posted!"
+        }
+      };
+
+      let comments = [];
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        comments = Array.isArray(saved) ? saved : [];
+      } catch (error) {
+        comments = [];
+      }
+
+      const getLanguage = () => document.documentElement.lang === "en" ? "en" : "ko";
+
+      function saveComments() {
+        localStorage.setItem(storageKey, JSON.stringify(comments));
+      }
+
+      function formatDate(timestamp, language) {
+        try {
+          return new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          }).format(new Date(timestamp));
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function renderComments() {
+        const language = getLanguage();
+        const t = commentTranslations[language];
+        total.textContent = language === "ko"
+          ? `${comments.length}${t.countSuffix}`
+          : `${comments.length}${t.countSuffix}`;
+        list.replaceChildren();
+
+        if (comments.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "comment-empty";
+          const icon = document.createElement("span");
+          icon.textContent = "🐾";
+          const message = document.createElement("div");
+          message.textContent = t.empty;
+          message.style.whiteSpace = "pre-line";
+          empty.append(icon, message);
+          list.appendChild(empty);
+          return;
+        }
+
+        [...comments].reverse().forEach((comment) => {
+          const cat = catOptions[comment.cat] || catOptions.ragdoll;
+          const item = document.createElement("article");
+          item.className = "comment-item";
+
+          const image = document.createElement("div");
+          image.className = "comment-cat-image";
+          image.setAttribute("role", "img");
+          image.setAttribute("aria-label", cat[language]);
+          image.textContent = cat.emoji;
+
+          const body = document.createElement("div");
+          body.className = "comment-body";
+          const meta = document.createElement("div");
+          meta.className = "comment-meta";
+          const name = document.createElement("span");
+          name.className = "comment-cat-name";
+          name.textContent = `${cat[language]} · ${t.guest}`;
+          const date = document.createElement("time");
+          date.dateTime = new Date(comment.createdAt).toISOString();
+          date.textContent = formatDate(comment.createdAt, language);
+          const message = document.createElement("p");
+          message.className = "comment-message";
+          message.textContent = comment.message;
+
+          meta.append(name, date);
+          body.append(meta, message);
+          item.append(image, body);
+          list.appendChild(item);
+        });
+      }
+
+      function applyCommentLanguage() {
+        const language = getLanguage();
+        const t = commentTranslations[language];
+        document.getElementById("commentsEyebrow").textContent = t.eyebrow;
+        document.getElementById("comments-title").textContent = t.title;
+        document.getElementById("commentsDescription").textContent = t.description;
+        document.getElementById("commentFormTitle").textContent = t.formTitle;
+        document.getElementById("commentFormHelper").textContent = t.helper;
+        document.getElementById("catChoiceLabel").textContent = t.choice;
+        document.getElementById("commentInputLabel").textContent = t.input;
+        input.placeholder = t.placeholder;
+        document.getElementById("commentSubmitButton").textContent = t.submit;
+        document.getElementById("commentListTitle").textContent = t.listTitle;
+        catChoiceList.setAttribute("aria-label", t.choice);
+
+        catChoiceList.querySelectorAll("input").forEach((radio) => {
+          const label = radio.nextElementSibling;
+          const cat = catOptions[radio.value];
+          if (label && cat) label.setAttribute("aria-label", cat[language]);
+        });
+        renderComments();
+      }
+
+      input.addEventListener("input", () => {
+        count.textContent = `${input.value.length} / 150`;
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        const selected = form.querySelector('input[name="commentCat"]:checked');
+        if (!message || !selected) {
+          input.focus();
+          return;
+        }
+
+        comments.push({
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          cat: selected.value,
+          message,
+          createdAt: Date.now()
+        });
+        saveComments();
+        input.value = "";
+        count.textContent = "0 / 150";
+        renderComments();
+
+        if (typeof showToast === "function") {
+          showToast(commentTranslations[getLanguage()].saved);
+        }
+      });
+
+      document.querySelectorAll(".language-button").forEach((button) => {
+        button.addEventListener("click", () => setTimeout(applyCommentLanguage, 0));
+      });
+
+      const langObserver = new MutationObserver(applyCommentLanguage);
+      langObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+      applyCommentLanguage();
+    })();
+  </script>
+
 </body>
 </html>
